@@ -293,18 +293,18 @@ plt.show()
 
 #%% MTI - CANCELADOR DOBLE - PARA TRES MUESTRAS
 k=4             #Ajuste de Ganancia
-compressed_signal_mti= np.abs(compressed_signal_t[2]-2*compressed_signal_t[1]+compressed_signal_t[0])
+compressed_signal_mti_dc= np.abs(compressed_signal_t[2]-2*compressed_signal_t[1]+compressed_signal_t[0])
 
-MTI_threshold= k*np.convolve( compressed_signal_mti , ventana , mode='same')
+MTI_threshold= k*np.convolve( compressed_signal_mti_dc , ventana , mode='same')
 
 # Aplicar el umbral a la señal comprimida después del MTI
 
-detection_cfar = np.zeros_like(compressed_signal_mti)
+detection_cfar = np.zeros_like(compressed_signal_mti_dc)
 
 # Detectar si la señal supera el umbral
-for row in range(1, len(compressed_signal_mti)):
-    if compressed_signal_mti[row] > MTI_threshold[row]:
-        detection_cfar[row] = compressed_signal_mti[row]
+for row in range(1, len(compressed_signal_mti_dc)):
+    if compressed_signal_mti_dc[row] > MTI_threshold[row]:
+        detection_cfar[row] = compressed_signal_mti_dc[row]
 
 
 detection_cfar=np.sign(detection_cfar)
@@ -325,8 +325,10 @@ fig.suptitle('Received Signal')
 
 #Compressed MTI Signal
 
+compressed_signal_mti_dc_T=compressed_signal_mti_dc.reshape(1, 2000)
+
 ax = axes[0]
-ax.plot(ranks/1e3,np.abs(compressed_mti_signal[1]))
+ax.plot(ranks/1e3,np.abs(compressed_signal_mti_dc_T[0]))
 ax.set_ylabel('Abs Amplitude')
 ax.set_xlabel('Range [km]')
 ax.grid(True)
@@ -342,25 +344,26 @@ ax.grid(True)
 ax = axes[1]
 ax.plot(ranks/1e3, (detection_cfar[0]),marker='o')
 ax.set_ylabel('Abs value')
-ax.set_xlabel('Detected Signal after MTI')
+ax.set_xlabel('Detected Signal after MTI - Cancelador Doble')
 ax.grid(True)
+
 
 
 
 #%% STI - SIMPLE CANCELADOR - PARA DOS MUESTRAS
-k=4             #Ajuste de Ganancia
-compressed_signal_mti= np.abs(compressed_signal_t[1]+compressed_signal_t[0])
+k=4            #Ajuste de Ganancia
+compressed_signal_mti_sc= np.abs(compressed_signal_t[1]+compressed_signal_t[0])
 
-MTI_threshold= k*np.convolve( compressed_signal_mti , ventana , mode='same')
+MTI_threshold= k*np.convolve( compressed_signal_mti_sc , ventana , mode='same')
 
 # Aplicar el umbral a la señal comprimida después del MTI
 
-detection_cfar = np.zeros_like(compressed_signal_mti)
+detection_cfar = np.zeros_like(compressed_signal_mti_sc)
 
 # Detectar si la señal supera el umbral
-for row in range(1, len(compressed_signal_mti)):
-    if compressed_signal_mti[row] > MTI_threshold[row]:
-        detection_cfar[row] = compressed_signal_mti[row]
+for row in range(1, len(compressed_signal_mti_sc)):
+    if compressed_signal_mti_sc[row] > MTI_threshold[row]:
+        detection_cfar[row] = compressed_signal_mti_sc[row]
 
 
 detection_cfar=np.sign(detection_cfar)
@@ -381,8 +384,10 @@ fig.suptitle('Received Signal')
 
 #Compressed MTI Signal
 
+compressed_signal_mti_sc_T=compressed_signal_mti_sc.reshape(1, 2000)
+
 ax = axes[0]
-ax.plot(ranks/1e3,np.abs(compressed_mti_signal[1]))
+ax.plot(ranks/1e3,np.abs(compressed_signal_mti_sc_T[0]))
 ax.set_ylabel('Abs Amplitude')
 ax.set_xlabel('Range [km]')
 ax.grid(True)
@@ -398,5 +403,6 @@ ax.grid(True)
 ax = axes[1]
 ax.plot(ranks/1e3, (detection_cfar[0]),marker='o')
 ax.set_ylabel('Abs value')
-ax.set_xlabel('Detected Signal after MTI')
+ax.set_xlabel('Detected Signal after STI')
 ax.grid(True)
+
