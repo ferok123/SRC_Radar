@@ -62,7 +62,7 @@ rank_max = 30e3 # Maximum Range [m] (podría ser el Ru)
 rank_res = ts*c/2 # Range Step [m]
 tmax = 2*rank_max/c # Maximum Simulation Time
 
-radar_signal = pd.read_csv('signal_example.csv',index_col=None)
+radar_signal = pd.read_csv('signal_1.csv',index_col=None)
 radar_signal = np.array(radar_signal['real']+1j*radar_signal['imag'])
 radar_signal = radar_signal.reshape(Np,-1)
 radar_signal_f=fft(radar_signal,norm='ortho') # radar_signal (f)
@@ -196,14 +196,23 @@ for row in range(1, len(compressed_signal_mti)):
     if compressed_signal_mti[row] > MTI_threshold[row]:
         detection_cfar[row] = compressed_signal_mti[row]
 
+#Copio la señal CFAR
+detection_cfar_mti=detection_cfar 
 
+#Proceso la señal detection_cfar_mti sin np.sign
+detection_cfar_mti=np.diff(detection_cfar)
+detection_cfar_mti= np.concatenate((np.zeros(1),detection_cfar_mti))
+detection_cfar_mti[np.where(detection_cfar_mti<0)] = 0
+detection_cfar_mti = detection_cfar_mti.reshape(1, 2000)
+
+#Procesamiento normal de la señal para obtener un solo resultado por elemento movil
 detection_cfar=np.sign(detection_cfar)
 detection_cfar=np.diff(detection_cfar)
-# detection_cfar=np.insert(detection_cfar,[0],[0])
 detection_cfar = np.concatenate((np.zeros(1),detection_cfar))
-
 detection_cfar[np.where(detection_cfar<0)] = 0
 detection_cfar = detection_cfar.reshape(1, 2000)
+
+
 
 
 # for idx in 
@@ -351,7 +360,7 @@ ax.grid(True)
 
 
 #%% STI - SIMPLE CANCELADOR - PARA DOS MUESTRAS
-k=4            #Ajuste de Ganancia
+k=8            #Ajuste de Ganancia
 compressed_signal_mti_sc= np.abs(compressed_signal_t[1]+compressed_signal_t[0])
 
 MTI_threshold= k*np.convolve( compressed_signal_mti_sc , ventana , mode='same')
@@ -377,7 +386,7 @@ detection_cfar = detection_cfar.reshape(1, 2000)
 
 # for idx in 
 #%% PLOT SIGNAL 0 Y 1
-fig, axes = plt.subplots(2,1,figsize=(8,8),sharex=True)
+fig, axes = plt.subplots(3,1,figsize=(8,8),sharex=True)
 
 fig.suptitle('Received Signal')
 
@@ -401,6 +410,19 @@ ax.grid(True)
 #Deteccion CFAR
 
 ax = axes[1]
+ax.plot(ranks/1e3, (detection_cfar[0]),marker='o')
+ax.set_ylabel('Abs value')
+ax.set_xlabel('Detected Signal after STI')
+ax.grid(True)
+
+#Deteccion CFAR - TEST
+
+detection_cfar=detection_cfar-100000*detection_cfar_mti
+detection_cfar[np.where(detection_cfar<0)] = 0
+
+
+
+ax = axes[2]
 ax.plot(ranks/1e3, (detection_cfar[0]),marker='o')
 ax.set_ylabel('Abs value')
 ax.set_xlabel('Detected Signal after STI')
