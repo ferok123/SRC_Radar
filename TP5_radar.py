@@ -183,7 +183,7 @@ ventana=np.concatenate((np.ones(cantUnos), np.zeros(cantCeros), np.ones(cantUnos
 ventana/=200    #Altura ventana
 
 #%% MTI - CANCELADOR SIMPLE - PARA DOS MUESTRAS
-k=4             #Ajuste de Ganancia
+k=3.8             #Ajuste de Ganancia
 compressed_signal_mti= np.abs(compressed_signal_t[1]-compressed_signal_t[0])
 MTI_threshold= k*np.convolve( compressed_signal_mti , ventana , mode='same')
 
@@ -301,7 +301,7 @@ plt.show()
 
 
 #%% MTI - CANCELADOR DOBLE - PARA TRES MUESTRAS
-k=4             #Ajuste de Ganancia
+k=3.95             #Ajuste de Ganancia
 compressed_signal_mti_dc= np.abs(compressed_signal_t[2]-2*compressed_signal_t[1]+compressed_signal_t[0])
 
 MTI_threshold= k*np.convolve( compressed_signal_mti_dc , ventana , mode='same')
@@ -360,7 +360,7 @@ ax.grid(True)
 
 
 #%% STI - SIMPLE CANCELADOR - PARA DOS MUESTRAS
-k=8            #Ajuste de Ganancia
+k=10            #Ajuste de Ganancia
 compressed_signal_mti_sc= np.abs(compressed_signal_t[1]+compressed_signal_t[0])
 
 MTI_threshold= k*np.convolve( compressed_signal_mti_sc , ventana , mode='same')
